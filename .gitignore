@@ -1,0 +1,8 @@
+.vscode
+.vs
+.idea
+node_modules
+.env
+dist
+prisma/dev.db
+prisma/dev.db-journal

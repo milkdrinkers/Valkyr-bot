@@ -1,0 +1,36 @@
+{
+  "name": "continuity",
+  "version": "1.0.0",
+  "description": "A no-fuss Discord bot to handle role persistence",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FinOCE/continuity.git"
+  },
+  "keywords": [
+    "discord",
+    "persistence"
+  ],
+  "author": "FinOCE",
+  "bugs": {
+    "url": "https://github.com/FinOCE/continuity/issues"
+  },
+  "homepage": "https://github.com/FinOCE/continuity#readme",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "prisma": "^5.7.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.3.1"
+  }
+}
