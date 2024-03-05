@@ -1,5 +1,6 @@
 import { Client } from "discord.js"
 import { PrismaClient } from "@prisma/client"
+import { AboutEmbed } from "./embeds/AboutEmbed"
 
 // Setup clients
 require("dotenv").config()
@@ -86,6 +87,16 @@ client.on("guildMemberRemove", async member => {
   console.log(
     `Saved ${member.user.username}'s roles for guild ${member.guild.name} (${member.guild.id})`
   )
+})
+
+client.on("interactionCreate", async interaction => {
+  if (interaction.user.bot) return
+
+  // Handle about me
+  if (interaction.isChatInputCommand() && interaction.commandName === "about") {
+    await interaction.reply({ embeds: [AboutEmbed()], ephemeral: true })
+    return
+  }
 })
 
 // Login bot
