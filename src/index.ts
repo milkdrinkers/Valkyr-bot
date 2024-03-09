@@ -52,7 +52,7 @@ client.on("guildMemberAdd", async member => {
     .filter(role => role.id !== member.guild.id)
     .map(role => role.id)
 
-  await member.roles.add(validRoles)
+  await member.roles.add(validRoles).catch(console.error)
 
   console.log(`Added ${validRoles.length} roles to ${member.user.username}`)
 })
