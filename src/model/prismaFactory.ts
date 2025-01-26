@@ -6,7 +6,7 @@ export const prismaFactory = async () => {
         await prisma.$connect();
         return prisma;
     } catch (error) {
-        throw new Error("Failed to create prisma client!");
+        throw new Error(`Failed to create prisma client! ${error}`);
     }
 };
 export default prismaFactory;
