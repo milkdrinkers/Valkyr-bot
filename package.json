@@ -4,7 +4,7 @@
   "description": "A no-fuss Discord bot to handle role persistence",
   "main": "src/index.ts",
   "scripts": {
-    "migrate": "bunx prisma generate && bunx prisma migrate deploy",
+    "migrate": "bun prisma generate && bunx prisma migrate deploy",
     "build": "bun build src/index.ts --sourcemap=external --minify --target bun --outdir dist",
     "start": "bun run migrate && bun src/index.ts",
     "dev": "bun run migrate && bun src/index.ts --watch",
