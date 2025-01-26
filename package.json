@@ -27,12 +27,11 @@
   "homepage": "https://github.com/FinOCE/continuity#readme",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^22.10.10",
-    "prisma": "^6.2.1",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.3"
+    "ts-node-dev": "^2.0.0"
   },
   "dependencies": {
+    "@types/node": "^22.10.10",
+    "typescript": "^5.7.3",
     "@discordx/pagination": "^3.5.5",
     "@discordx/utilities": "^7.0.3",
     "@prisma/client": "^6.2.1",
@@ -40,6 +39,7 @@
     "@types/bun": "^1.2.0",
     "close-with-grace": "^2.2.0",
     "discord.js": "^14.17.3",
+    "prisma": "^6.2.1",
     "discordx": "^11.12.2"
   }
 }
