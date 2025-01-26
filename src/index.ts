@@ -1,106 +1,49 @@
-import { Client } from "discord.js"
-import { PrismaClient } from "@prisma/client"
-import { AboutEmbed } from "./embeds/AboutEmbed"
+import clientFactory from './model/clientFactory';
+import { Events, Message, type Interaction } from 'discord.js';
+import prismaFactory from './model/prismaFactory';
+import { validateBotToken } from './utility/utils';
+import closeWithGrace from 'close-with-grace';
 
-// Setup clients
-require("dotenv").config()
+import './service/monitorService';
+import './command/commands';
+import persistanceHandler from './module/persistanceHandler';
+import patreonBotFixer from './module/patreonBotFixer';
 
-const prisma = new PrismaClient()
+// Handle graceful shutdown (Used to prevent node exiting before flushing logs)
+closeWithGrace(
+    { 
+        logger: { error: (m) => console.error(m, 'Shutting down bot due to fatal error!') }
+    }, async ({ signal, err }) => {
+        if (err) {
+            console.error(err, `${signal} received, shutting down bot with fatal error.`)
+        } else {
+            console.info(`${signal} received, shutting down bot.`)
+        }
 
-const client: Client<true> = new Client({
-  intents: ["Guilds", "GuildMembers", "GuildModeration"]
-})
-
-// Handle gateway events
-client.on("roleDelete", async role => {
-  await prisma.role.delete({
-    where: { id: role.id }
-  })
-
-  console.log(`Deleted role ${role.name} (${role.id})`)
-})
-
-client.on("guildDelete", async guild => {
-  await prisma.guild.delete({
-    where: { id: guild.id }
-  })
-
-  console.log(`Left guild ${guild.name} (${guild.id})`)
-})
-
-client.on("guildMemberAdd", async member => {
-  const roles = await prisma.role.findMany({
-    where: {
-      guildId: member.guild.id,
-      users: {
-        some: { userId: member.id }
-      }
+        process.exit(0); // Calling exit manually ensure log files are saved
     }
-  })
+)
 
-  if (roles.length === 0) return
+if (!validateBotToken(process.env['DISCORD_TOKEN']))
+    process.exit(0);
 
-  const guildRoles = await member.guild.roles.fetch()
-  const botMember = await member.guild.members.fetch(client.user.id)
+export const prisma = await prismaFactory();
+export const client = clientFactory();
 
-  const higherRoles = guildRoles.filter(
-    role => role.position > botMember.roles.highest.position
-  )
+client.on(Events.ClientReady, async () => {
+    await client.initApplicationCommands()
+    console.log('Bot started')
+});
 
-  const validRoles = roles
-    .filter(role => !higherRoles.has(role.id))
-    .filter(role => role.id !== member.guild.id)
-    .map(role => role.id)
+client.on(Events.InteractionCreate, (interaction: Interaction) => {
+    client.executeInteraction(interaction);
+});
 
-  await member.roles.add(validRoles).catch(console.error)
+client.on(Events.MessageCreate, (message: Message) => {
+    client.executeCommand(message);
+});
 
-  console.log(`Added ${validRoles.length} roles to ${member.user.username}`)
-})
+persistanceHandler(client, prisma);
+patreonBotFixer(client, prisma);
 
-client.on("guildMemberRemove", async member => {
-  await prisma.guild.upsert({
-    where: { id: member.guild.id },
-    create: { id: member.guild.id },
-    update: { id: member.guild.id }
-  })
-
-  await prisma.user.upsert({
-    where: { id: member.id },
-    create: { id: member.id },
-    update: { id: member.id }
-  })
-
-  for (const role of member.roles.cache.values()) {
-    await prisma.role.upsert({
-      where: { id: role.id },
-      create: { id: role.id, guildId: role.guild.id },
-      update: { id: role.id, guildId: role.guild.id }
-    })
-
-    await prisma.userRole.upsert({
-      where: { userId_roleId: { userId: member.id, roleId: role.id } },
-      create: { userId: member.id, roleId: role.id },
-      update: { userId: member.id, roleId: role.id }
-    })
-  }
-
-  console.log(
-    `Saved ${member.user.username}'s roles for guild ${member.guild.name} (${member.guild.id})`
-  )
-})
-
-client.on("interactionCreate", async interaction => {
-  if (interaction.user.bot) return
-
-  // Handle about me
-  if (interaction.isChatInputCommand() && interaction.commandName === "about") {
-    await interaction
-      .reply({ embeds: [AboutEmbed()], ephemeral: true })
-      .catch(console.error)
-    return
-  }
-})
-
-// Login bot
-client.once("ready", () => console.log(`Logged in as ${client.user.username}`))
-client.login(process.env.TOKEN)
+await client.login(process.env['DISCORD_TOKEN']);

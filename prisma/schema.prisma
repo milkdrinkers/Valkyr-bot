@@ -10,6 +10,8 @@ datasource db {
 model User {
   id String @id
   roles UserRole[]
+  banned Boolean @default(false)
+  muted Boolean @default(false)
 }
 
 model Role {

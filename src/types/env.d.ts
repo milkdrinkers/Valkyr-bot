@@ -1,10 +1,3 @@
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      TOKEN: string
-      CLIENT_ID: string
-    }
-  }
-}
+declare global { }
 
-export {}
+export { };

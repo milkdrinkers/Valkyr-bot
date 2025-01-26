@@ -4,10 +4,12 @@
   "description": "A no-fuss Discord bot to handle role persistence",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "ts-node-dev --respawn src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "register": "node dist/register.js"
+    "migrate": "bunx prisma migrate deploy",
+    "build": "bun build src/index.ts --sourcemap=external --minify --target bun --outdir dist",
+    "start": "bun run migrate && bun src/index.ts",
+    "dev": "bun run migrate && bun src/index.ts --watch",
+    "migrationCreate": "bunx prisma migrate dev",
+    "register": "bun src/register.ts"
   },
   "repository": {
     "type": "git",
@@ -18,20 +20,26 @@
     "persistence"
   ],
   "author": "FinOCE",
+  "contributors": ["darksaid98"],
   "bugs": {
     "url": "https://github.com/FinOCE/continuity/issues"
   },
   "homepage": "https://github.com/FinOCE/continuity#readme",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^20.10.6",
-    "prisma": "^5.7.1",
+    "@types/node": "^22.10.10",
+    "prisma": "^6.2.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.1",
-    "discord.js": "^14.14.1",
-    "dotenv": "^16.3.1"
+    "@discordx/pagination": "^3.5.5",
+    "@discordx/utilities": "^7.0.3",
+    "@prisma/client": "^6.2.1",
+    "@sentry/bun": "^8.51.0",
+    "@types/bun": "^1.2.0",
+    "close-with-grace": "^2.2.0",
+    "discord.js": "^14.17.3",
+    "discordx": "^11.12.2"
   }
 }

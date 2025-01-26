@@ -1,25 +1,16 @@
-import {
-  ApplicationCommandType,
-  REST,
-  Routes,
-  SlashCommandBuilder
-} from "discord.js"
-import dotenv from "dotenv"
+import { Events } from 'discord.js';
+import clientFactory from './model/clientFactory';
+import { validateBotToken } from './utility/utils';
+import './command/commands';
 
-dotenv.config()
+if (!validateBotToken(process.env['DISCORD_TOKEN']))
+    process.exit(0);
 
-const rest = new REST().setToken(process.env.TOKEN)
+export const client = clientFactory();
 
-// Create commands
-const about = new SlashCommandBuilder()
-  .setName("about")
-  .setDescription("About this bot")
-  .setDMPermission(true)
-  .setNSFW(false)
+client.on(Events.ClientReady, async () => {
+    await client.initApplicationCommands(false);
+    process.exit(1);
+});
 
-// Register commands
-rest
-  .put(Routes.applicationCommands(process.env.CLIENT_ID), {
-    body: [about.toJSON()]
-  })
-  .then(() => console.log("Successfully registered commands"))
+await client.login(process.env['DISCORD_TOKEN']);
