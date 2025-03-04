@@ -29,10 +29,10 @@ export default (client: Client, prisma: PrismaClient) => {
         });
 
         if (user && user.banned)
-            Ban.ban(member);
+            Ban.giveBanRoles(member);
 
         if (user && user.muted)
-            Mute.mute(member);
+            Mute.giveMuteRoles(member);
 
         // Normal role restoration
         const roles = await prisma.role.findMany({

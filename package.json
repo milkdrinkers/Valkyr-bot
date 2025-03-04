@@ -30,16 +30,16 @@
     "ts-node-dev": "^2.0.0"
   },
   "dependencies": {
-    "@types/node": "^22.10.10",
-    "typescript": "^5.7.3",
-    "@discordx/pagination": "^3.5.5",
+    "@types/node": "^22.13.9",
+    "typescript": "^5.8.2",
+    "@discordx/pagination": "^3.5.6",
     "@discordx/utilities": "^7.0.3",
-    "@prisma/client": "^6.2.1",
-    "@sentry/bun": "^8.51.0",
-    "@types/bun": "^1.2.0",
+    "@prisma/client": "^6.4.1",
+    "@sentry/bun": "^9.3.0",
+    "@types/bun": "^1.2.4",
     "close-with-grace": "^2.2.0",
-    "discord.js": "^14.17.3",
-    "prisma": "^6.2.1",
+    "discord.js": "^14.18.0",
+    "prisma": "^6.4.1",
     "discordx": "^11.12.2"
   }
 }

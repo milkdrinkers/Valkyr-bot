@@ -8,29 +8,66 @@ datasource db {
 }
 
 model User {
-  id String @id
-  roles UserRole[]
-  banned Boolean @default(false)
-  muted Boolean @default(false)
+  id           String     @id
+  roles        UserRole[]
+  banned       Boolean    @default(false)
+  banStartTime DateTime? // When the ban started
+  banEndTime   DateTime? // When the ban will expire
+  banReason    String? // Optional reason for the ban
+
+  muted         Boolean   @default(false)
+  muteStartTime DateTime? // When the mute started
+  muteEndTime   DateTime? // When the mute will expire
+  muteReason    String? // Optional reason for the mute
+
+  // Relationship to the moderation actions applied to this user
+  moderationActions ModerationAction[] @relation("TargetUser")
+
+  // Relationship to actions performed by this user as a moderator
+  moderationPerformed ModerationAction[] @relation("ModeratorUser")
 }
 
 model Role {
-  id String @id
+  id      String     @id
   guildId String
-  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
-  users UserRole[]
+  guild   Guild      @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  users   UserRole[]
 }
 
 model Guild {
-  id String @id
-  roles Role[]
+  id                String             @id
+  roles             Role[]
+  moderationActions ModerationAction[]
 }
 
 model UserRole {
   userId String
   roleId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, roleId])
+}
+
+// Track moderation actions for audit purposes
+model ModerationAction {
+  id         String @id @default(uuid())
+  actionType String // "BAN", "UNBAN", "MUTE", "UNMUTE"
+
+  // The user who received the action
+  targetUserId String
+  targetUser   User   @relation("TargetUser", fields: [targetUserId], references: [id])
+
+  // The moderator who performed the action
+  moderatorId String
+  moderator   User   @relation("ModeratorUser", fields: [moderatorId], references: [id])
+
+  // The guild where the action took place
+  guildId String
+  guild   Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  reason    String? // Reason for the action
+  duration  Int? // Duration in seconds, null if permanent
+  createdAt DateTime  @default(now())
+  expiresAt DateTime? // When the action expires
 }

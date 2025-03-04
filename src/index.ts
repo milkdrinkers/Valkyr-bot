@@ -8,6 +8,7 @@ import './service/monitorService';
 import './command/commands';
 import persistanceHandler from './module/persistanceHandler';
 import patreonBotFixer from './module/patreonBotFixer';
+import { PunishmentService } from './service/punishmentService';
 
 // Handle graceful shutdown (Used to prevent node exiting before flushing logs)
 closeWithGrace(
@@ -32,7 +33,11 @@ export const client = clientFactory();
 
 client.on(Events.ClientReady, async () => {
     await client.initApplicationCommands()
+
     console.log('Bot started')
+
+    const CHECK_INTERVAL = 60000; // Check for expired bans/mutes every minute
+    setInterval(PunishmentService.checkExpiredPunishments, CHECK_INTERVAL);
 });
 
 client.on(Events.InteractionCreate, (interaction: Interaction) => {

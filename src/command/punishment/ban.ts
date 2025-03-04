@@ -2,6 +2,8 @@ import { ApplicationCommandOptionType, CommandInteraction, Guild, GuildMember, R
 import { Discord, Slash, SlashChoice, SlashOption } from 'discordx';
 import { Color } from '../../utility/color';
 import { prisma } from '../..';
+import { ModerationActionService } from '../../service/moderationService';
+import { parseDuration } from './util';
 
 @Discord()
 export default abstract class Ban {
@@ -13,8 +15,25 @@ export default abstract class Ban {
             required: true,
             type: ApplicationCommandOptionType.User,
         }) user: User,
+
+        @SlashOption({
+            name: 'reason',
+            description: 'What is the user being punished for?',
+            required: false,
+            type: ApplicationCommandOptionType.String,
+        }) reason: string = 'No reason provided',
+        
+        @SlashOption({
+            name: 'duration',
+            description: 'How long this punishment will last, format as (3mo 1d 2h 4m 5s).',
+            required: false,
+            type: ApplicationCommandOptionType.String,
+        }) duration: string,
+        
         interaction: CommandInteraction
     ) {
+        await interaction.deferReply({ flags: ['Ephemeral'] }); // It is vital to defer the reply if response will take more than a few seconds
+        
         try {
             const member = interaction.member;
             
@@ -27,8 +46,6 @@ export default abstract class Ban {
 
             const targetMember = guild.members.cache.get(user.id);
 
-            await interaction.deferReply({ flags: ['Ephemeral'] }); // It is vital to defer the reply if response will take more than a few seconds
-            
             const originalApprovalRoles = process.env['ALLOW_BAN_ROLES'] ?? '';
 
             const approvalRoles: Role[] = originalApprovalRoles
@@ -41,15 +58,18 @@ export default abstract class Ban {
             if (!hasApproverRole)
                 throw new Error('You do not have the required permissions to execute this command!');
                 
+            // Parse duration
+            const punishmentDuration = parseDuration(duration);
+
             if (targetMember !== undefined) {
                 const targetHasHigherRole = targetMember.roles.highest.position >= member.roles.highest.position;
                 if (targetHasHigherRole)
                     throw new Error('The target user has greater or equal permissions to you!');
 
-                Ban.ban(targetMember);
+                Ban.giveBanRoles(targetMember);
             }
 
-            await Ban.banDB(user);
+            await ModerationActionService.banUser(user, punishmentDuration, member, guild, reason);
             
             await interaction.followUp({
                 embeds: [
@@ -81,8 +101,18 @@ export default abstract class Ban {
             required: true,
             type: ApplicationCommandOptionType.User,
         }) user: User,
+
+        @SlashOption({
+            name: 'reason',
+            description: 'What is the user being punished for?',
+            required: false,
+            type: ApplicationCommandOptionType.String,
+        }) reason: string = 'No reason provided',
+        
         interaction: CommandInteraction
     ) {
+        await interaction.deferReply({ flags: ['Ephemeral'] }); // It is vital to defer the reply if response will take more than a few seconds
+        
         try {
             const member = interaction.member;
             
@@ -94,8 +124,6 @@ export default abstract class Ban {
                 throw new Error('The guild could not be found!');
 
             const targetMember = guild.members.cache.get(user.id);
-    
-            await interaction.deferReply({ flags: ['Ephemeral'] }); // It is vital to defer the reply if response will take more than a few seconds
     
             const originalApprovalRoles = process.env['ALLOW_BAN_ROLES'] ?? '';
 
@@ -114,10 +142,10 @@ export default abstract class Ban {
                 if (targetHasHigherRole)
                     throw new Error('The target user has greater or equal permissions to you!');
 
-                Ban.unban(targetMember);
+                Ban.takeBanRoles(targetMember);
             }
 
-            await Ban.unbanDB(user);
+            await ModerationActionService.unbanUser(user, member, guild, reason);
             
             await interaction.followUp({
                 embeds: [
@@ -155,24 +183,24 @@ export default abstract class Ban {
     /**
      * ban
      */
-    public static ban(member: GuildMember | PartialGuildMember) {
+    public static giveBanRoles(member: GuildMember | PartialGuildMember, reason: string = 'Unknown reason') {
         const bannedRoles = this.getBannedRoles(member.guild);
 
         bannedRoles.forEach(role => {
             if (!member.roles.cache.has(role.id))
-                member.roles.add(role);
+                member.roles.add(role, reason);
         })
     }
 
     /**
      * unban
      */
-    public static unban(member: GuildMember | PartialGuildMember) {
+    public static takeBanRoles(member: GuildMember | PartialGuildMember, reason: string = 'Unknown reason') {
         const bannedRoles = this.getBannedRoles(member.guild);
 
         bannedRoles.forEach(role => {
             if (member.roles.cache.has(role.id))
-                member.roles.remove(role);
+                member.roles.remove(role, reason);
         })
     }
 
@@ -183,54 +211,5 @@ export default abstract class Ban {
         const bannedRoles = this.getBannedRoles(member.guild);
 
         return this.hasRole(member, bannedRoles);
-    }
-
-    /**
-     * isBanned
-     */
-    public static async isBannedDB(member: GuildMember | PartialGuildMember) {
-        const user = await prisma.user.findUnique({
-            where: {
-                id: member.guild.id
-            }
-        })
-
-        if (!user)
-            return false;
-
-        return user.banned;
-    }
-
-    /**
-     * ban
-     */
-    public static async banDB(member: GuildMember | PartialGuildMember | User) {
-        await prisma.user.upsert({
-            where: { id: member.id },
-            create: { 
-                id: member.id, 
-                banned: true,
-            },
-            update: { 
-                id: member.id,
-                banned: true,
-            }
-        })
-    }
-
-    /**
-     * unban
-     */
-    public static async unbanDB(member: GuildMember | PartialGuildMember | User) {
-        await prisma.user.upsert({
-            where: { id: member.id },
-            create: { 
-                id: member.id, 
-            },
-            update: { 
-                id: member.id,
-                banned: false,
-            }
-        })
     }
 }
