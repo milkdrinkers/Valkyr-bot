@@ -4,7 +4,7 @@ import type { PunishmentDuration } from '../command/punishment/util';
 
 export class ModerationActionService {
     // Ban a user
-    static async banUser(
+    public static async banUser(
         member: GuildMember | PartialGuildMember | User,
         duration: PunishmentDuration | null = null,
         moderator?: GuildMember | PartialGuildMember | User,
@@ -14,19 +14,19 @@ export class ModerationActionService {
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
-            create: { 
-                id: member.id, 
+            create: {
+                id: member.id,
                 banned: true,
                 banStartTime: duration?.startTime ?? null,
                 banEndTime: duration?.endTime ?? null,
-                banReason: reason
+                banReason: reason,
             },
-            update: { 
+            update: {
                 banned: true,
                 banStartTime: duration?.startTime ?? null,
                 banEndTime: duration?.endTime ?? null,
-                banReason: reason
-            }
+                banReason: reason,
+            },
         });
 
         // Log moderation action
@@ -40,29 +40,29 @@ export class ModerationActionService {
                 duration: duration?.duration,
                 createdAt: duration?.startTime ?? new Date(),
                 expiresAt: duration?.endTime ?? null,
-            }
+            },
         });
     }
 
     // Unban a user
-    static async unbanUser(
+    public static async unbanUser(
         member: GuildMember | PartialGuildMember | User,
         moderator?: GuildMember | PartialGuildMember | User,
         guild?: Guild,
-        reason: string = 'Unknown reason'
+        reason: string = 'Unknown reason',
     ) {
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
-            create: { 
-                id: member.id, 
+            create: {
+                id: member.id,
             },
-            update: { 
+            update: {
                 banned: false,
                 banStartTime: null,
                 banEndTime: null,
-                banReason: null
-            }
+                banReason: null,
+            },
         });
 
         // Log moderation action
@@ -72,26 +72,25 @@ export class ModerationActionService {
                 targetUserId: member.id,
                 moderatorId: moderator?.id ?? '',
                 guildId: guild?.id ?? '',
-                reason: reason
-            }
+                reason: reason,
+            },
         });
     }
 
-    static async isBanned(member: GuildMember | PartialGuildMember) {
+    public static async isBanned(member: GuildMember | PartialGuildMember) {
         const user = await prisma.user.findUnique({
             where: {
-                id: member.guild.id
-            }
-        })
+                id: member.guild.id,
+            },
+        });
 
-        if (!user)
-            return false;
+        if (!user) return false;
 
         return user.banned;
     }
 
     // Mute a user
-    static async muteUser(
+    public static async muteUser(
         member: GuildMember | PartialGuildMember | User,
         duration: PunishmentDuration | null = null,
         moderator?: GuildMember | PartialGuildMember | User,
@@ -101,19 +100,19 @@ export class ModerationActionService {
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
-            create: { 
-                id: member.id, 
+            create: {
+                id: member.id,
                 muted: true,
                 muteStartTime: duration?.startTime ?? null,
                 muteEndTime: duration?.endTime ?? null,
-                muteReason: reason
+                muteReason: reason,
             },
-            update: { 
+            update: {
                 muted: true,
                 muteStartTime: duration?.startTime ?? null,
                 muteEndTime: duration?.endTime ?? null,
-                muteReason: reason
-            }
+                muteReason: reason,
+            },
         });
 
         // Log moderation action
@@ -127,29 +126,29 @@ export class ModerationActionService {
                 duration: duration?.duration,
                 createdAt: duration?.startTime ?? new Date(),
                 expiresAt: duration?.endTime ?? null,
-            }
+            },
         });
     }
 
     // Unmute a user
-    static async unmuteUser(
+    public static async unmuteUser(
         member: GuildMember | PartialGuildMember | User,
         moderator?: GuildMember | PartialGuildMember | User,
         guild?: Guild,
-        reason: string = 'Unknown reason'
+        reason: string = 'Unknown reason',
     ) {
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
-            create: { 
-                id: member.id, 
+            create: {
+                id: member.id,
             },
-            update: { 
+            update: {
                 muted: false,
                 muteStartTime: null,
                 muteEndTime: null,
-                muteReason: null
-            }
+                muteReason: null,
+            },
         });
 
         // Log moderation action
@@ -159,20 +158,19 @@ export class ModerationActionService {
                 targetUserId: member.id,
                 moderatorId: moderator?.id ?? '',
                 guildId: guild?.id ?? '',
-                reason: reason
-            }
+                reason: reason,
+            },
         });
     }
 
-    static async isMuted(member: GuildMember | PartialGuildMember) {
+    public static async isMuted(member: GuildMember | PartialGuildMember) {
         const user = await prisma.user.findUnique({
             where: {
-                id: member.guild.id
-            }
-        })
+                id: member.guild.id,
+            },
+        });
 
-        if (!user)
-            return false;
+        if (!user) return false;
 
         return user.muted;
     }

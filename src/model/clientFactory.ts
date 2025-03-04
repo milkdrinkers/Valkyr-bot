@@ -19,8 +19,8 @@ export const clientFactory = () => {
             silent: false,
             guards: [], // TODO Add guards here
         });
-    } catch (error) {
-        throw new Error("Failed to create discord client!");
+    } catch (_ignored) {
+        throw new Error('Failed to create discord client!');
     }
 };
 export default clientFactory;

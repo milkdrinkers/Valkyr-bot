@@ -7,7 +7,7 @@ export class PunishmentService {
     /**
      * Clears expired punishments
      */
-    static async checkExpiredPunishments() {
+    public static async checkExpiredPunishments() {
         console.log(`Checking for expired punishments`);
 
         const now = new Date();
@@ -17,27 +17,26 @@ export class PunishmentService {
             where: {
                 banned: true,
                 banEndTime: {
-                    lt: now
-                }
-            }
+                    lt: now,
+                },
+            },
         });
 
         for (const user of expiredBans) {
             const dUser = client.users.cache.get(user.id);
-            if (!dUser)
-                continue;
+            if (!dUser) continue;
 
-            await ModerationActionService.unbanUser(dUser, undefined, undefined, "Expired");
+            await ModerationActionService.unbanUser(dUser, undefined, undefined, 'Expired');
 
             // go through all guilds and try to unban
             for (const guild of client.guilds.cache.values()) {
                 try {
                     const member = guild.members.cache.get(dUser.id);
-                    if (!member)
-                        continue;
+                    if (!member) continue;
 
-                    Ban.takeBanRoles(member, "Expired");
-                } catch (ignored) { // Ignore errors (user might not be banned in this guild)
+                    Ban.takeBanRoles(member, 'Expired');
+                } catch (_ignored) {
+                    // Ignore errors (user might not be banned in this guild)
                 }
             }
 
@@ -49,27 +48,26 @@ export class PunishmentService {
             where: {
                 muted: true,
                 muteEndTime: {
-                    lt: now
-                }
-            }
+                    lt: now,
+                },
+            },
         });
 
         for (const user of expiredMutes) {
             const dUser = client.users.cache.get(user.id);
-            if (!dUser)
-                continue;
+            if (!dUser) continue;
 
-            await ModerationActionService.unmuteUser(dUser, undefined, undefined, "Expired");
-            
+            await ModerationActionService.unmuteUser(dUser, undefined, undefined, 'Expired');
+
             // go through all guilds and try to unmute
             for (const guild of client.guilds.cache.values()) {
                 try {
                     const member = guild.members.cache.get(dUser.id);
-                    if (!member)
-                        continue;
+                    if (!member) continue;
 
-                    Mute.takeMuteRoles(member, "Expired");
-                } catch (ignored) { // Ignore errors (user might not be muted in this guild)
+                    Mute.takeMuteRoles(member, 'Expired');
+                } catch (_ignored) {
+                    // Ignore errors (user might not be muted in this guild)
                 }
             }
 

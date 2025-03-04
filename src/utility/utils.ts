@@ -5,7 +5,7 @@
  */
 export const validateBotToken = (token?: string): token is string => {
     if (token == undefined || token.length == 0) {
-        throw new Error("Invalid discord bot token.");
+        throw new Error('Invalid discord bot token.');
     }
     return true;
 };

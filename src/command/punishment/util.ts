@@ -1,7 +1,6 @@
 // Utility Types
 export type ModerationActionType = 'BAN' | 'UNBAN' | 'MUTE' | 'UNMUTE';
 
-
 export interface PunishmentDuration {
     duration: number;
     startTime: Date;
@@ -9,8 +8,8 @@ export interface PunishmentDuration {
 }
 
 /**
- * 
- * @param durationString 
+ *
+ * @param durationString
  * @returns null for infinite
  */
 export function parseDuration(durationString?: string): PunishmentDuration | null {
@@ -26,22 +25,21 @@ export function parseDuration(durationString?: string): PunishmentDuration | nul
     // Match numbers followed by units (mo must come first to avoid matching m first)
     const pattern = /(\d+)(mo|y|w|d|h|m|s)/g;
     const units: Record<string, number> = {
-        mo: 30 * 86400,    // months (30 days)
-        y: 365 * 86400,    // years
-        w: 7 * 86400,      // weeks
-        d: 86400,          // days
-        h: 3600,           // hours
-        m: 60,             // minutes
-        s: 1               // seconds
+        mo: 30 * 86400, // months (30 days)
+        y: 365 * 86400, // years
+        w: 7 * 86400, // weeks
+        d: 86400, // days
+        h: 3600, // hours
+        m: 60, // minutes
+        s: 1, // seconds
     };
 
     // Go through entire input
     let duration = 0;
-    let matchedLength = 0;
     let match: RegExpExecArray | null;
 
     while ((match = pattern.exec(durationString))) {
-        const [full, valueStr, unit] = match;
+        const [_full, valueStr, unit] = match;
 
         if (!(unit in units)) {
             break;
@@ -49,7 +47,6 @@ export function parseDuration(durationString?: string): PunishmentDuration | nul
 
         const value = parseInt(valueStr, 10);
         duration += value * units[unit];
-        matchedLength += full.length;
     }
 
     if (duration === 0) {

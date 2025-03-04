@@ -1,3 +1,3 @@
-declare global { }
+declare global {}
 
-export { };
+export {};

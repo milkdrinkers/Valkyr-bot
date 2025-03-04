@@ -10,7 +10,7 @@ enum ApproveTypes {
 
 @Discord()
 export default abstract class Approval {
-    @Slash({ description: "Give a user a approved role." })
+    @Slash({ description: 'Give a user a approved role.' })
     private async approve(
         @SlashChoice(
             {
@@ -25,37 +25,36 @@ export default abstract class Approval {
                 name: ApproveTypes.Character,
                 value: ApproveTypes.Character,
             },
-        ) 
+        )
         @SlashOption({
-            description: "What role are you handling?",
-            name: "type",
+            description: 'What role are you handling?',
+            name: 'type',
             required: true,
             type: ApplicationCommandOptionType.String,
-        }) type: string,
+        })
+        type: string,
         @SlashOption({
             name: 'user',
             description: 'The user to approve.',
             required: true,
             type: ApplicationCommandOptionType.User,
-        }) user: User,
-        interaction: CommandInteraction
+        })
+        user: User,
+        interaction: CommandInteraction,
     ) {
         try {
             const member = interaction.member;
-            
-            if (!(member instanceof GuildMember))
-                throw new Error('The guild user not be found!');
+
+            if (!(member instanceof GuildMember)) throw new Error('The guild user not be found!');
 
             const guild = interaction.guild;
-            if (guild === null)
-                throw new Error('The guild could not be found!');
+            if (guild === null) throw new Error('The guild could not be found!');
 
             const targetMember = guild.members.cache.get(user.id);
-            if (targetMember === undefined)
-                throw new Error('The specified user could not be found!');
+            if (targetMember === undefined) throw new Error('The specified user could not be found!');
 
             await interaction.deferReply({ flags: ['Ephemeral'] }); // It is vital to defer the reply if response will take more than a few seconds
-            
+
             let originalApprovalRoles;
             let originalApprovedRoles;
             switch (type) {
@@ -87,38 +86,36 @@ export default abstract class Approval {
 
             const hasApproverRole = this.hasRole(member, approvalRoles);
 
-            if (!hasApproverRole)
-                throw new Error('You do not have the required permissions to execute this command!');
-                
+            if (!hasApproverRole) throw new Error('You do not have the required permissions to execute this command!');
+
             // Give roles
             approvedRoles.forEach(role => {
-                if (!targetMember.roles.cache.has(role.id))
-                    targetMember.roles.add(role);
-            })
-            
+                if (!targetMember.roles.cache.has(role.id)) targetMember.roles.add(role);
+            });
+
             await interaction.followUp({
                 embeds: [
                     {
                         description: `Granted ${targetMember} approved role.`,
-                        color: Color.GREEN
-                    }
+                        color: Color.GREEN,
+                    },
                 ],
-                flags: ['Ephemeral']
-            })
-        } catch(error) {
+                flags: ['Ephemeral'],
+            });
+        } catch (error) {
             await interaction.followUp({
                 embeds: [
                     {
                         description: `Failed to grant approved role. ${(error as Error).message}`,
-                        color: Color.RED
-                    }
+                        color: Color.RED,
+                    },
                 ],
-                flags: ['Ephemeral']
-            })
+                flags: ['Ephemeral'],
+            });
         }
     }
 
-    @Slash({ description: "Remove a users approved role." })
+    @Slash({ description: 'Remove a users approved role.' })
     private async disapprove(
         @SlashChoice(
             {
@@ -135,35 +132,34 @@ export default abstract class Approval {
             },
         )
         @SlashOption({
-            description: "What role are you handling?",
-            name: "type",
+            description: 'What role are you handling?',
+            name: 'type',
             required: true,
             type: ApplicationCommandOptionType.String,
-        }) type: string,
+        })
+        type: string,
         @SlashOption({
             name: 'user',
             description: 'The user to disapprove.',
             required: true,
             type: ApplicationCommandOptionType.User,
-        }) user: User,
-        interaction: CommandInteraction
+        })
+        user: User,
+        interaction: CommandInteraction,
     ) {
         try {
             const member = interaction.member;
-            
-            if (!(member instanceof GuildMember))
-                throw new Error('The guild user not be found!');
+
+            if (!(member instanceof GuildMember)) throw new Error('The guild user not be found!');
 
             const guild = interaction.guild;
-            if (guild === null)
-                throw new Error('The guild could not be found!');
+            if (guild === null) throw new Error('The guild could not be found!');
 
             const targetMember = guild.members.cache.get(user.id);
-            if (targetMember === undefined)
-                throw new Error('The specified user could not be found!');
-    
+            if (targetMember === undefined) throw new Error('The specified user could not be found!');
+
             await interaction.deferReply({ flags: ['Ephemeral'] }); // It is vital to defer the reply if response will take more than a few seconds
-    
+
             let originalApprovalRoles;
             let originalApprovedRoles;
             switch (type) {
@@ -192,37 +188,35 @@ export default abstract class Approval {
                 .split(',')
                 .map(roleId => guild.roles.cache.get(roleId))
                 .filter(role => role !== undefined);
-    
+
             const hasApproverRole = this.hasRole(member, approvalRoles);
-    
-            if (!hasApproverRole)
-                throw new Error('You do not have the required permissions to execute this command!');
-        
+
+            if (!hasApproverRole) throw new Error('You do not have the required permissions to execute this command!');
+
             // Remove roles
             approvedRoles.forEach(role => {
-                if (targetMember.roles.cache.has(role.id))
-                    targetMember.roles.remove(role);
-            })
-            
+                if (targetMember.roles.cache.has(role.id)) targetMember.roles.remove(role);
+            });
+
             await interaction.followUp({
                 embeds: [
                     {
                         description: `Removed ${targetMember} approved role.`,
-                        color: Color.GREEN
-                    }
+                        color: Color.GREEN,
+                    },
                 ],
-                flags: ['Ephemeral']
-            })
-        } catch(error) {
+                flags: ['Ephemeral'],
+            });
+        } catch (error) {
             await interaction.followUp({
                 embeds: [
                     {
                         description: `Failed to remove approved role. ${(error as Error).message}`,
-                        color: Color.RED
-                    }
+                        color: Color.RED,
+                    },
                 ],
-                flags: ['Ephemeral']
-            })
+                flags: ['Ephemeral'],
+            });
         }
     }
 

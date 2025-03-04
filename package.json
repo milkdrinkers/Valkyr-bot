@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "A no-fuss Discord bot to handle role persistence",
   "main": "src/index.ts",
+  "type": "module",
   "scripts": {
     "migrate": "bun prisma generate && bunx prisma migrate deploy",
     "build": "bun build src/index.ts --sourcemap=external --minify --target bun --outdir dist",
     "start": "bun run migrate && bun src/index.ts",
     "dev": "bun run migrate && bun src/index.ts --watch",
     "migrationCreate": "bunx prisma migrate dev",
-    "register": "bun src/register.ts"
+    "register": "bun src/register.ts",
+    "lint": "bunx eslint . --ext .js,.cjs,.mjs,.ts --fix",
+    "format": "prettier --write ./src"
   },
   "repository": {
     "type": "git",
@@ -27,7 +30,17 @@
   "homepage": "https://github.com/FinOCE/continuity#readme",
   "license": "ISC",
   "devDependencies": {
-    "ts-node-dev": "^2.0.0"
+    "@eslint/compat": "^1.2.7",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-import-resolver-typescript": "^3.8.3",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-n": "^17.16.2",
+    "jiti": "^2.4.2",
+    "prettier": "^3.5.3"
   },
   "dependencies": {
     "@types/node": "^22.13.9",
