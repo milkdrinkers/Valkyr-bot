@@ -1,5 +1,5 @@
 {
-  "name": "continuity",
+  "name": "valkyr",
   "version": "1.0.0",
   "description": "A no-fuss Discord bot to handle role persistence",
   "main": "src/index.ts",
@@ -16,18 +16,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FinOCE/continuity.git"
+    "url": "git+https://github.com/FinOCE/valkyr.git"
   },
   "keywords": [
     "discord",
     "persistence"
   ],
-  "author": "FinOCE",
-  "contributors": ["darksaid98"],
+  "author": "darksaid98",
+  "contributors": ["FinOCE"],
   "bugs": {
-    "url": "https://github.com/FinOCE/continuity/issues"
+    "url": "https://github.com/alathra/valkyr/issues"
   },
-  "homepage": "https://github.com/FinOCE/continuity#readme",
+  "homepage": "https://github.com/alathra/valkyr#readme",
   "license": "ISC",
   "devDependencies": {
     "@eslint/compat": "^1.2.7",

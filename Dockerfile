@@ -1,7 +1,7 @@
 FROM node:latest
 
-RUN mkdir -p /usr/src/continuity
-WORKDIR /usr/src/continuity
+RUN mkdir -p /usr/src/valkyr
+WORKDIR /usr/src/valkyr
 
 COPY package*.json ./
 RUN npm ci

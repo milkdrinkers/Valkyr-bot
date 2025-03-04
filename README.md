@@ -1,4 +1,4 @@
-# Continuity
+# Valkyr
 
 A no-fuss Discord bot to handle role persistence. When members leave and rejoin your server, their roles will persist. Make sure to put the bot's role high as it can only re-assign roles below its own.
 
