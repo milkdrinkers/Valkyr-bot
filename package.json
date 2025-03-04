@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FinOCE/valkyr.git"
+    "url": "git+https://github.com/milkdrinkers/Valkyr-bot.git"
   },
   "keywords": [
     "discord",
@@ -25,9 +25,9 @@
   "author": "darksaid98",
   "contributors": ["FinOCE"],
   "bugs": {
-    "url": "https://github.com/alathra/valkyr/issues"
+    "url": "https://github.com/milkdrinkers/Valkyr-bot/issues"
   },
-  "homepage": "https://github.com/alathra/valkyr#readme",
+  "homepage": "https://github.com/milkdrinkers/Valkyr-bot#readme",
   "license": "ISC",
   "devDependencies": {
     "@eslint/compat": "^1.2.7",
