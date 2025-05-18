@@ -43,16 +43,16 @@
     "prettier": "^3.5.3"
   },
   "dependencies": {
-    "@types/node": "^22.15.18",
-    "typescript": "^5.8.3",
     "@discordx/pagination": "^3.5.7",
     "@discordx/utilities": "^7.0.4",
-    "@prisma/client": "^6.8.2",
+    "@prisma/client": "6.8.2",
     "@sentry/bun": "^9.19.0",
     "@types/bun": "^1.2.13",
+    "@types/node": "^22.15.18",
     "close-with-grace": "^2.2.0",
     "discord.js": "^14.19.3",
-    "prisma": "^6.8.2",
-    "discordx": "^11.12.4"
+    "discordx": "^11.12.4",
+    "prisma": "6.8.2",
+    "typescript": "^5.8.3"
   }
 }
