@@ -11,6 +11,10 @@ export class ModerationActionService {
         guild?: Guild,
         reason: string = 'Unknown reason',
     ) {
+        // Ensure objects exist in database
+        await this.ensureGuild(guild);
+        await this.ensureUser(moderator);
+
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
@@ -51,6 +55,10 @@ export class ModerationActionService {
         guild?: Guild,
         reason: string = 'Unknown reason',
     ) {
+        // Ensure objects exist in database
+        await this.ensureGuild(guild);
+        await this.ensureUser(moderator);
+
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
@@ -97,6 +105,10 @@ export class ModerationActionService {
         guild?: Guild,
         reason: string = 'Unknown reason',
     ) {
+        // Ensure objects exist in database
+        await this.ensureGuild(guild);
+        await this.ensureUser(moderator);
+
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
@@ -137,6 +149,10 @@ export class ModerationActionService {
         guild?: Guild,
         reason: string = 'Unknown reason',
     ) {
+        // Ensure objects exist in database
+        await this.ensureGuild(guild);
+        await this.ensureUser(moderator);
+        
         // Update user in database
         await prisma.user.upsert({
             where: { id: member.id },
@@ -173,5 +189,25 @@ export class ModerationActionService {
         if (!user) return false;
 
         return user.muted;
+    }
+
+    private static async ensureGuild(guild?: Guild) {
+        // Ensure guild exists in the database
+        if (guild?.id !== undefined)
+            await prisma.guild.upsert({
+                where: { id: guild?.id ?? '' },
+                create: { id: guild?.id ?? '' },
+                update: {},
+            });
+    }
+
+    private static async ensureUser(user?: GuildMember | PartialGuildMember | User) {
+        // Ensure user exists
+        if (user?.id !== undefined)
+            await prisma.user.upsert({
+                where: { id: user?.id ?? '' },
+                create: { id: user?.id ?? '' },
+                update: {},
+            });
     }
 }
