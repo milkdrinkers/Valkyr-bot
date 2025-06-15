@@ -88,6 +88,7 @@ export default abstract class Ban {
                 ],
                 flags: ['Ephemeral'],
             });
+            throw error;
         }
     }
 
@@ -162,6 +163,7 @@ export default abstract class Ban {
                 ],
                 flags: ['Ephemeral'],
             });
+            throw error;
         }
     }
 

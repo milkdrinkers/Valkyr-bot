@@ -112,6 +112,7 @@ export default abstract class Approval {
                 ],
                 flags: ['Ephemeral'],
             });
+            throw error;
         }
     }
 
@@ -217,6 +218,7 @@ export default abstract class Approval {
                 ],
                 flags: ['Ephemeral'],
             });
+            throw error;
         }
     }
 
